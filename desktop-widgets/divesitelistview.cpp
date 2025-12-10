@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 #include "divesitelistview.h"
+#include "consolidatedivesitesdialog.h"
 #include "core/subsurface-qt/divelistnotifier.h"
 #include "core/divelog.h"
 #include "core/divesite.h"
@@ -108,6 +109,12 @@ void DiveSiteListView::diveSiteChanged(struct dive_site *ds, int field)
 void DiveSiteListView::on_purgeUnused_clicked()
 {
 	Command::purgeUnusedDiveSites();
+}
+
+void DiveSiteListView::on_consolidateSites_clicked()
+{
+	ConsolidateDiveSitesDialog dialog(this);
+	dialog.exec();
 }
 
 void DiveSiteListView::on_filterText_textChanged(const QString &text)

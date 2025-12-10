@@ -57,6 +57,13 @@
       </spacer>
      </item>
      <item>
+      <widget class="QToolButton" name="consolidateSites">
+       <property name="text">
+        <string>Consolidate dive sites</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QToolButton" name="purgeUnused">
        <property name="text">
         <string>Purge unused dive sites</string>
