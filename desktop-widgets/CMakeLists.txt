@@ -25,6 +25,7 @@ set (SUBSURFACE_UI
 	addfilterpreset.ui
 	btdeviceselectiondialog.ui
 	configuredivecomputerdialog.ui
+	consolidatedivesitesdialog.ui
 	divecomponentselection.ui
 	divelogexportdialog.ui
 	divelogimportdialog.ui
@@ -68,6 +69,8 @@ set(SUBSURFACE_INTERFACE
 	about.h
 	configuredivecomputerdialog.cpp
 	configuredivecomputerdialog.h
+	consolidatedivesitesdialog.cpp
+	consolidatedivesitesdialog.h
 	divecomponentselection.cpp
 	divecomponentselection.h
 	divelistview.cpp
