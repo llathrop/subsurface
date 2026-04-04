@@ -156,7 +156,7 @@ void ConsolidateDiveSitesDialog::updateTreeWidget()
 		dive_site *refSite = group.primarySite ? group.primarySite : group.sites[0];
 
 		// Add each site in the group
-		for (dive_site *site : group.sites) {
+		for (dive_site *site : group.sites) { if (site == group.primarySite) continue;
 			QTreeWidgetItem *siteItem = new QTreeWidgetItem(groupItem);
 
 			// Site name with primary indicator
@@ -272,7 +272,7 @@ void ConsolidateDiveSitesDialog::consolidateGroup(DiveSiteGroup &group)
 
 	// Build list of sites to merge (all except primary)
 	QVector<dive_site *> sitesToMerge;
-	for (dive_site *site : group.sites) {
+	for (dive_site *site : group.sites) { if (site == group.primarySite) continue;
 		sitesToMerge.append(site);
 	}
 
