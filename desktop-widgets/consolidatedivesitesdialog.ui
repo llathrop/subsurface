@@ -166,6 +166,16 @@
     </layout>
    </item>
    <item>
+    <widget class="QCheckBox" name="autoPurgeCheckBox">
+     <property name="text">
+      <string>Auto-purge unused sites after consolidation</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
