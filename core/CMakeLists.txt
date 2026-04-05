@@ -75,6 +75,8 @@ set(SUBSURFACE_CORE_LIB_SRCS
 	divesite.cpp
 	divesite.h
 	divesitetable.h
+	divesite_cluster.cpp
+	divesite_cluster.h
 	divesitehelpers.cpp
 	divesitehelpers.h
 	divesoft.cpp

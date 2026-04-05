@@ -10,12 +10,18 @@
 #include <QMessageBox>
 #include <algorithm>
 #include <set>
+#include <deque>
 
 // Default distance threshold: 10 meters (approximately 33 feet)
 static const double DEFAULT_DISTANCE_METERS = 10.0;
 static const double DEFAULT_DISTANCE_FEET = 33.0;
 static const double FEET_TO_METERS = 0.3048;
 static const double METERS_TO_FEET = 3.28084;
+
+// Conversion factor: 1 degree latitude is approx 111320 meters
+// 1 micro-degree is approx 0.11132 meters
+// 1 meter is approx 8.98 micro-degrees
+static const double METERS_TO_UDEG_LAT = 9.0;
 
 ConsolidateDiveSitesDialog::ConsolidateDiveSitesDialog(QWidget *parent) :
 	QDialog(parent)
@@ -73,71 +79,11 @@ void ConsolidateDiveSitesDialog::scanForGroups()
 
 void ConsolidateDiveSitesDialog::findSiteGroups(unsigned int distanceMeters)
 {
-	groups.clear();
-
-	// Collect all dive sites with GPS coordinates
-	std::vector<dive_site *> sitesWithLocation;
+	std::vector<dive_site *> sites;
 	for (const auto &ds : divelog.sites) {
-		if (ds->has_gps_location()) {
-			sitesWithLocation.push_back(ds.get());
-		}
+		sites.push_back(ds.get());
 	}
-
-	if (sitesWithLocation.empty())
-		return;
-
-	// Track which sites have been assigned to a group
-	std::set<dive_site *> assigned;
-
-	// For each site, find all sites within distance and form groups
-	for (dive_site *site : sitesWithLocation) {
-		if (assigned.find(site) != assigned.end())
-			continue;
-
-		// Start a new potential group with this site
-		std::vector<dive_site *> groupSites;
-		groupSites.push_back(site);
-
-		// Find all sites within distance of any site in the current group
-		// Use a simple approach: keep expanding until no more sites can be added
-		bool expanded = true;
-		while (expanded) {
-			expanded = false;
-			for (dive_site *candidate : sitesWithLocation) {
-				if (assigned.find(candidate) != assigned.end())
-					continue;
-				if (std::find(groupSites.begin(), groupSites.end(), candidate) != groupSites.end())
-					continue;
-
-				// Check if candidate is within distance of any site in the group
-				for (dive_site *groupSite : groupSites) {
-					unsigned int dist = get_distance(groupSite->location, candidate->location);
-					if (dist <= distanceMeters) {
-						groupSites.push_back(candidate);
-						expanded = true;
-						break;
-					}
-				}
-			}
-		}
-
-		// Only create a group if there are multiple sites
-		if (groupSites.size() > 1) {
-			DiveSiteGroup group;
-			group.sites = groupSites;
-			// Default: select the site with the most dives as primary
-			group.primarySite = *std::max_element(groupSites.begin(), groupSites.end(),
-				[](dive_site *a, dive_site *b) {
-					return a->dives.size() < b->dives.size();
-				});
-			groups.push_back(group);
-
-			// Mark all sites in this group as assigned
-			for (dive_site *s : groupSites) {
-				assigned.insert(s);
-			}
-		}
-	}
+	groups = find_dive_site_groups(sites, distanceMeters);
 }
 
 void ConsolidateDiveSitesDialog::updateTreeWidget()
@@ -156,7 +102,7 @@ void ConsolidateDiveSitesDialog::updateTreeWidget()
 		dive_site *refSite = group.primarySite ? group.primarySite : group.sites[0];
 
 		// Add each site in the group
-		for (dive_site *site : group.sites) { if (site == group.primarySite) continue;
+		for (dive_site *site : group.sites) {
 			QTreeWidgetItem *siteItem = new QTreeWidgetItem(groupItem);
 
 			// Site name with primary indicator
@@ -272,7 +218,9 @@ void ConsolidateDiveSitesDialog::consolidateGroup(DiveSiteGroup &group)
 
 	// Build list of sites to merge (all except primary)
 	QVector<dive_site *> sitesToMerge;
-	for (dive_site *site : group.sites) { if (site == group.primarySite) continue;
+	for (dive_site *site : group.sites) {
+		if (site == group.primarySite)
+			continue;
 		sitesToMerge.append(site);
 	}
 
@@ -301,17 +249,14 @@ void ConsolidateDiveSitesDialog::consolidateGroupClicked()
 
 	consolidateGroup(group);
 
-	// Remove the consolidated group and refresh
-	groups.erase(groups.begin() + groupIndex);
-	updateTreeWidget();
-	updateButtonStates();
+	bool autoPurge = ui.autoPurgeCheckBox->isChecked();
 
-	// Ask if user wants to purge unused sites
-	if (QMessageBox::question(this, tr("Purge Unused Sites"),
-		tr("The merged sites are now unused. Do you want to purge them?"),
-		QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+	if (autoPurge) {
 		Command::purgeUnusedDiveSites();
 	}
+
+	// Re-scan to reflect the new state of the divelog
+	scanForGroups();
 }
 
 void ConsolidateDiveSitesDialog::consolidateAllClicked()
@@ -341,14 +286,12 @@ void ConsolidateDiveSitesDialog::consolidateAllClicked()
 		consolidateGroup(group);
 	}
 
-	groups.clear();
-	updateTreeWidget();
-	updateButtonStates();
-
-	// Ask if user wants to purge unused sites
-	if (QMessageBox::question(this, tr("Purge Unused Sites"),
-		tr("The merged sites are now unused. Do you want to purge them?"),
-		QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+	bool autoPurge = ui.autoPurgeCheckBox->isChecked();
+	if (autoPurge) {
 		Command::purgeUnusedDiveSites();
 	}
+
+	// Re-scan to reflect the new state of the divelog
+	scanForGroups();
 }
+

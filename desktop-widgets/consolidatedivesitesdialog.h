@@ -7,16 +7,9 @@
 #include <vector>
 
 #include "ui_consolidatedivesitesdialog.h"
+#include "core/divesite_cluster.h"
 
 struct dive_site;
-
-// A group of dive sites that are within the consolidation distance of each other
-struct DiveSiteGroup {
-	std::vector<dive_site *> sites;
-	dive_site *primarySite;  // The site selected as primary (dives will be merged here)
-
-	DiveSiteGroup() : primarySite(nullptr) {}
-};
 
 class ConsolidateDiveSitesDialog : public QDialog {
 	Q_OBJECT

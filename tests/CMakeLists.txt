@@ -130,6 +130,7 @@ set(TEST_PICTURE TestPicture)
 endif()
 TEST(TestMerge testmerge.cpp)
 TEST(TestTagList testtaglist.cpp)
+TEST(TestConsolidateDiveSites testconsolidatedivesites.cpp)
 
 #if (SUBSURFACE_TARGET_EXECUTABLE MATCHES "MobileExecutable")
 #TEST(TestPlannerShared testplannershared.cpp)
