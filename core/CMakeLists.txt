@@ -43,6 +43,8 @@ set(SUBSURFACE_CORE_LIB_SRCS
 	cloudstorage.h
 	cochran.cpp
 	cochran.h
+	consecutive_dive_detector.cpp
+	consecutive_dive_detector.h
 	color.cpp
 	color.h
 	configuredivecomputer.cpp

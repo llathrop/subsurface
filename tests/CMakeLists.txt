@@ -130,6 +130,7 @@ set(TEST_PICTURE TestPicture)
 endif()
 TEST(TestMerge testmerge.cpp)
 TEST(TestMergeDiveToSite testmergedivetosite.cpp)
+TEST(TestConsecutiveDives testconsecutivedives.cpp)
 TEST(TestTagList testtaglist.cpp)
 TEST(TestConsolidateDiveSites testconsolidatedivesites.cpp)
 
@@ -173,6 +174,8 @@ add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND}
 	${TEST_PICTURE}
 	TestMerge
 	TestMergeDiveToSite
+	TestConsecutiveDives
+	TestConsolidateDiveSites
 	TestTagList
 	${TEST_PLANNER_SHARED}
 	TestQPrefCloudStorage

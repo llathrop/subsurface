@@ -29,6 +29,7 @@ set (SUBSURFACE_UI
 	divecomponentselection.ui
 	divelogexportdialog.ui
 	divelogimportdialog.ui
+	mergeconsecutivediveswizard.ui
 	divesiteimportdialog.ui
 	divesitelistview.ui
 	diveplanner.ui
@@ -107,6 +108,8 @@ set(SUBSURFACE_INTERFACE
 	locationinformation.h
 	mainwindow.cpp
 	mainwindow.h
+	mergeconsecutivediveswizard.cpp
+	mergeconsecutivediveswizard.h
 	modeldelegates.cpp
 	modeldelegates.h
 	notificationwidget.cpp
