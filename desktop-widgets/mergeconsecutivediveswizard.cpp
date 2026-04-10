@@ -5,6 +5,7 @@
 #include "core/dive.h"
 #include "core/divelog.h"
 #include "core/string-format.h"
+#include "core/qthelper.h"
 
 #include <QCheckBox>
 #include <QMessageBox>
@@ -110,8 +111,8 @@ void MergeConsecutiveDivesWizard::populateTable()
 
 QString MergeConsecutiveDivesWizard::formatDiveInfo(const dive *d) const
 {
-	QString dateStr = QString::fromStdString(formatDiveDateAndTime(d));
-	QString depthStr = QString::fromStdString(formatDepth(d->maxdepth));
+	QString dateStr = formatDiveDateTime(d);
+	QString depthStr = get_depth_string(d->maxdepth, true);
 	QString durationStr = formatDuration(d->duration.seconds);
 
 	QString info;
