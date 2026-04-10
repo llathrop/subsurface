@@ -28,10 +28,9 @@ void TestMergeDiveToSite::testMergeSingleDiveToSite()
 
 	// Create a dive at the source site
 	auto d = std::make_unique<dive>();
-	d->dive_site = sourceSite;
-	sourceSite->add_dive(d.get());
 	dive *divePtr = d.get();
 	divelog.dives.record_dive(std::move(d));
+	sourceSite->add_dive(divePtr);
 
 	QCOMPARE(divelog.sites.size(), 2);
 	QCOMPARE(sourceSite->dives.size(), 1);
@@ -63,10 +62,10 @@ void TestMergeDiveToSite::testMergeMultipleDivesToSite()
 	std::vector<dive *> divePtrs;
 	for (int i = 0; i < 3; i++) {
 		auto d = std::make_unique<dive>();
-		d->dive_site = sourceSite;
-		sourceSite->add_dive(d.get());
-		divePtrs.push_back(d.get());
+		dive *divePtr = d.get();
+		divePtrs.push_back(divePtr);
 		divelog.dives.record_dive(std::move(d));
+		sourceSite->add_dive(divePtr);
 	}
 
 	QCOMPARE(sourceSite->dives.size(), 3);
@@ -102,10 +101,9 @@ void TestMergeDiveToSite::testMergePreservesTargetSiteData()
 
 	// Create a dive at source
 	auto d = std::make_unique<dive>();
-	d->dive_site = sourceSite;
-	sourceSite->add_dive(d.get());
 	dive *divePtr = d.get();
 	divelog.dives.record_dive(std::move(d));
+	sourceSite->add_dive(divePtr);
 
 	// Store original target site data
 	std::string origName = targetSite->name;
@@ -132,20 +130,18 @@ void TestMergeDiveToSite::testMergeUpdatesAssociatedDives()
 
 	// Add existing dive to target
 	auto existingDive = std::make_unique<dive>();
-	existingDive->dive_site = targetSite;
-	targetSite->add_dive(existingDive.get());
 	dive *existingPtr = existingDive.get();
 	divelog.dives.record_dive(std::move(existingDive));
+	targetSite->add_dive(existingPtr);
 
 	// Create source site with dive
 	dive_site *sourceSite = divelog.sites.create("Source Site");
 	sourceSite->location = create_location(48.8570, 2.3530);
 
 	auto newDive = std::make_unique<dive>();
-	newDive->dive_site = sourceSite;
-	sourceSite->add_dive(newDive.get());
 	dive *newPtr = newDive.get();
 	divelog.dives.record_dive(std::move(newDive));
+	sourceSite->add_dive(newPtr);
 
 	QCOMPARE(targetSite->dives.size(), 1);
 
